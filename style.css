@@ -1,0 +1,18 @@
+body {
+    background-color: #f7f7f7;
+}
+h1 {
+    font-family: "Georgia", "Palatino", serif;
+    font-size: 100pt;
+    font-weight: 300;
+    margin-bottom: 0;
+    text-align: center;
+}
+p#definition {
+    color: #999999;
+    font-family: "Georgia", "Palatino", serif;
+    font-size: 16pt;
+    font-style: italic;
+    margin: 0 auto;
+    width: 44ex;
+}
