@@ -27,7 +27,7 @@ func itoc(index int) byte {
 }
 
 func hasMoreLetters(d *intermediate) bool {
-    for i := 0; i < len(d.chars); i++ {
+    for i := 0; i < 26; i++ {
         if d.chars[i] > 0 {
             return true
         }
@@ -36,6 +36,7 @@ func hasMoreLetters(d *intermediate) bool {
 }
 
 func anagramDispatcher(out chan<- string, d *intermediate) {
+    fmt.Printf("Dispatching for '%v'...\n", d.cur)
     numRoutines := 0
     in := make(chan string)
     for i := 0; i < 26; i++ {
@@ -45,7 +46,7 @@ func anagramDispatcher(out chan<- string, d *intermediate) {
             n.chars = append([]int{}, d.chars...)
             n.chars[i] -= 1
             numRoutines++
-            go findAnagrams(in, n)
+            go findAnagramsAndSignalCompletion(in, n)
         }
     }
 
@@ -67,7 +68,7 @@ func anagramDispatcher(out chan<- string, d *intermediate) {
 }
 
 func findAnagrams(out chan<- string, d *intermediate) {
-    if words[d.cur] {
+    if words[d.cur] && (d.cur == "i" || len(d.cur) > 1) {
         if (hasMoreLetters(d)) {
             anagramDispatcher(out, d)
         } else {
@@ -83,6 +84,10 @@ func findAnagrams(out chan<- string, d *intermediate) {
             findAnagrams(out, n)
         }
     }
+}
+
+func findAnagramsAndSignalCompletion(out chan<- string, d *intermediate) {
+    findAnagrams(out, d)
     out <- ""
 }
 
@@ -131,6 +136,7 @@ func main() {
     results := make(chan string)
     go func() {
         anagramDispatcher(results, &intermediate{cur: "", chars: chars[0:26]})
+        close(results)
     }()
     for word := range results {
         fmt.Println(word)
