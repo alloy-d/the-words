@@ -101,14 +101,14 @@ func (d *Dictionary) readWords(fileName string) {
     file, err := os.Open(fileName, os.O_RDONLY, 0000)
     defer file.Close()
     if err != nil {
-        os.Exit(1)
+        panic(err)
     }
     reader := bufio.NewReader(file)
 
     // TODO: this should be done better
     charRegexp, err := regexp.Compile("^[a-z]+$")
     if err != nil {
-        os.Exit(1)
+        panic(err)
     }
 
     for {

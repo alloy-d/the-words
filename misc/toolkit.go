@@ -1,7 +1,7 @@
 package main
 
 import (
-    "./dictionary"
+    "alloy-d/dictionary"
     "flag"
     "fmt"
 )
