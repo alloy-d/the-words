@@ -1,6 +1,7 @@
 package main
 
 import (
+    "alloy-d/anagrams"
     "alloy-d/dictionary"
     "flag"
     "fmt"
@@ -8,7 +9,7 @@ import (
 
 var dictionaryFile *string = flag.String("dict", "/usr/share/dict/words", "Dictionary file to use")
 var printWords *bool = flag.Bool("print-words", false, "Whether to print all word data")
-var printChars *bool = flag.Bool("print-chars", true, "Whether to print alphabet data")
+var printChars *bool = flag.Bool("print-chars", false, "Whether to print alphabet data")
 
 func main() {
     flag.Parse()
@@ -22,6 +23,20 @@ func main() {
 
     if *printChars {
         fmt.Printf("%+v", d)
+    }
+
+    if flag.NArg() > 0 {
+        in := make(chan string)
+        p := new(anagrams.Pool)
+        p.AddWord(flag.Arg(0))
+        go p.FindAnagrams(d, in)
+
+        for {
+            select {
+                case a := <-in:
+                    fmt.Println(a)
+            }
+        }
     }
 }
 
