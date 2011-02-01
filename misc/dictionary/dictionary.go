@@ -19,36 +19,40 @@ func ItoC(index uint) byte {
 
 // Assumption: the alphabet can't be larger than 64 characters.
 const AlphabetSize = 26
-type Word struct {
+type LetterBag struct {
     Mask uint64
     Occurrences [AlphabetSize]uint
-    NumChars uint
-    MostUncommonChar byte
+    NumLetters uint
+    MostUncommonLetter byte
+}
+
+type Word struct {
     Text string
+    LetterBag
 }
 
 func NewWord(text string) *Word {
     w := new(Word)
     w.Text = text
-    w.generateMaskAndOccurrences()
+    w.generateMaskAndOccurrences(w.Text)
     return w
 }
 
-func (w *Word) generateMaskAndOccurrences() {
-    for i := 0; i < len(w.Text); i++ {
-        index := CtoI(w.Text[i])
-        w.Mask |= (1 << index)
-        w.Occurrences[index] += 1
-        w.NumChars += 1
+func (b *LetterBag) generateMaskAndOccurrences(text string) {
+    for i := 0; i < len(text); i++ {
+        index := CtoI(text[i])
+        b.Mask |= (1 << index)
+        b.Occurrences[index] += 1
+        b.NumLetters += 1
     }
 }
 
-func (w *Word) determineMostUncommonCharacter(chars *CharacterData) {
+func (b *LetterBag) determineMostUncommonCharacter(chars *CharacterData) {
     var freq float64 = 1.0
     var char byte = 'a'
 
     for i := uint(0); i < AlphabetSize; i++ {
-        if w.Mask & (1 << i) != 0 {
+        if b.Mask & (1 << i) != 0 {
             if chars.Frequencies[i] < freq {
                 freq = chars.Frequencies[i]
                 char = ItoC(i)
@@ -56,7 +60,11 @@ func (w *Word) determineMostUncommonCharacter(chars *CharacterData) {
         }
     }
 
-    w.MostUncommonChar = char
+    b.MostUncommonLetter = char
+}
+
+func (b LetterBag) String() string {
+    return fmt.Sprintf("%d letters\tmask %026b\toccurrences %v\tmost uncommon letter %c", b.NumLetters, b.Mask, b.Occurrences, b.MostUncommonLetter)
 }
 
 func (w Word) String() string {
@@ -64,7 +72,7 @@ func (w Word) String() string {
     if len(w.Text) <= 4 { space += "\t" }
     if len(w.Text) <= 12 { space += "\t" }
     if len(w.Text) <= 20 { space += "\t" }
-    return fmt.Sprintf("\"%s\":%s%d characters\tmask %026b\toccurrences %v\tmost uncommon char %c", w.Text, space, w.NumChars, w.Mask, w.Occurrences, w.MostUncommonChar)
+    return fmt.Sprintf("\"%s\":%s%v", w.Text, space, w.LetterBag)
 }
 
 
