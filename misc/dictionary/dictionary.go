@@ -9,11 +9,11 @@ import (
 )
 
 // character to index
-func ctoi(char byte) uint {
+func CtoI(char byte) uint {
     return uint(char - 'a')
 }
 // index to character
-func itoc(index uint) byte {
+func ItoC(index uint) byte {
     return byte(index + 'a')
 }
 
@@ -36,7 +36,7 @@ func NewWord(text string) *Word {
 
 func (w *Word) generateMaskAndOccurrences() {
     for i := 0; i < len(w.Text); i++ {
-        index := ctoi(w.Text[i])
+        index := CtoI(w.Text[i])
         w.Mask |= (1 << index)
         w.Occurrences[index] += 1
         w.NumChars += 1
@@ -51,7 +51,7 @@ func (w *Word) determineMostUncommonCharacter(chars *CharacterData) {
         if w.Mask & (1 << i) != 0 {
             if chars.Frequencies[i] < freq {
                 freq = chars.Frequencies[i]
-                char = itoc(i)
+                char = ItoC(i)
             }
         }
     }
@@ -76,7 +76,7 @@ type CharacterData struct {
 func (c CharacterData) String() string {
     s := "Character Data: --------------------------------------------\n"
     for i := uint(0); i < AlphabetSize; i++ {
-        s += fmt.Sprintf("  '%c' occurred %10d times with a frequency of %0.4f\n", itoc(i), c.Occurrences[i], c.Frequencies[i])
+        s += fmt.Sprintf("  '%c' occurred %10d times with a frequency of %0.4f\n", ItoC(i), c.Occurrences[i], c.Frequencies[i])
     }
     s += "------------------------------------------------------------\n"
 
@@ -129,7 +129,7 @@ func (d *Dictionary) processAlphabetData() {
     // count characters
     for _, w := range d.Words {
         for i := 0; i < len(w.Text); i++ {
-            index := ctoi(w.Text[i])
+            index := CtoI(w.Text[i])
             d.Occurrences[index] += 1
         }
     }
